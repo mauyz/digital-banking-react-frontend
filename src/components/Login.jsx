@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { login } from '../app/app';
+import { login } from '../app/auth_service';
 
 export default function Login() {
 
@@ -8,6 +8,8 @@ export default function Login() {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+
+    const [error, setError] = useState();
 
     const handleUsernameChange = (e) => {
         const newValue = e.target.value;
@@ -21,29 +23,30 @@ export default function Login() {
 
     const handleLoginSubmit = (e) => {
         e.preventDefault();
-        login({username: username, password: password})
-        .then((response => {
-            const data = response.data;
-            localStorage.setItem('accessToken', data.accessToken);
-            navigate("/")
-        }))
-        .catch((error) => {
-        console.log(error);
-        })
+        login({ username: username, password: password })
+            .then((response => {
+                const data = response.data;
+                localStorage.setItem('accessToken', data.accessToken);
+                navigate("/")
+            }))
+            .catch((error) => {
+                setError(error.message);
+            })
     }
 
     return (
-        <div className='p-1 m-1' style={{ height: '500px' }}>
-            <div className='row d-flex justify-content-center align-items-center' style={{ height: '100%' }}>
+        <div className='container vh-100'>
+            <div className='row d-flex justify-content-center align-items-center h-100'>
                 <div className='col-md-6'>
                     <div className='card'>
                         <div className='card-body'>
-                            <h3>Log in to your account</h3>
+                            <h3 className='mb-3'>Log in to your account</h3>
                             <form onSubmit={handleLoginSubmit}>
                                 <div className='mb-3'>
                                     <label className='form-label'>Username:</label>
                                     <input
                                         type='text'
+                                        autoFocus="true"
                                         value={username}
                                         onChange={handleUsernameChange}
                                         className='form-control' />
@@ -56,7 +59,11 @@ export default function Login() {
                                         onChange={handlePasswordChange}
                                         className='form-control' />
                                 </div>
-
+                                {error &&
+                                    <div className='mb-1 text-center'>
+                                        <span className='text-danger'>{error}</span>
+                                    </div>
+                                }
                                 <button type='submit' className='btn btn-primary' >Connect</button>
                             </form>
                         </div>
