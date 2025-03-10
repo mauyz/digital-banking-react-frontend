@@ -32,8 +32,8 @@ export default function Login() {
                 localStorage.setItem('accessToken', data.accessToken);
                 navigate("/")
             }))
-            .catch((error) => {
-                setError(error.message);
+            .catch((response) => {
+                setError(response.message);
             })
     }
 
@@ -56,19 +56,21 @@ export default function Login() {
                                 <div className='mb-3'>
                                     <label className='form-label'>Username:</label>
                                     <input
+                                        className='form-control'
                                         type='text'
-                                        autoFocus="true"
+                                        autoFocus={true}
+                                        required={true}
                                         value={username}
-                                        onChange={handleUsernameChange}
-                                        className='form-control' />
+                                        onChange={handleUsernameChange} />
                                 </div>
                                 <div className='mb-3'>
                                     <label className='form-label'>Password:</label>
                                     <input
+                                        className='form-control'
+                                        required={true}
                                         type='password'
                                         value={password}
-                                        onChange={handlePasswordChange}
-                                        className='form-control' />
+                                        onChange={handlePasswordChange} />
                                 </div>
                                 {error &&
                                     <div className='mb-1 text-center'>

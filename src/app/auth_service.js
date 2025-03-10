@@ -24,7 +24,7 @@ export const apiClient = () => {
         (response) => response,
         (error) => {
             const { response } = error;
-            if (response && response.status === 401) {
+            if (!error.config.url.includes("/auth/login") && response && response.status === 401) {
                 localStorage.removeItem('accessToken');
                 window.location.href = '/login?error=expired';
             }
