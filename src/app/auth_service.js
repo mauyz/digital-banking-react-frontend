@@ -2,13 +2,13 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
 export const apiClient = () => {
-    const apiClient = axios.create({
+    const axiosInstance = axios.create({
         baseURL: "http://localhost:8085",
         headers: {
             "Content-Type": "application/x-www-form-urlencoded"
         }
     });
-    apiClient.interceptors.request.use(
+    axiosInstance.interceptors.request.use(
         (config) => {
             const accessToken = localStorage.getItem("accessToken");
             if (accessToken && !config.url.includes("/auth/login")) {
@@ -20,9 +20,19 @@ export const apiClient = () => {
             return Promise.reject(error);
         }
     );
-    return apiClient;
+    axiosInstance.interceptors.response.use(
+        (response) => response,
+        (error) => {
+            const { response } = error;
+            if (response && response.status === 401) {
+                localStorage.removeItem('accessToken');
+                window.location.href = '/login?error=expired';
+            }
+            return Promise.reject(error);
+        }
+    );
+    return axiosInstance;
 }
-
 
 
 export const login = (credentials) => {
@@ -50,9 +60,9 @@ export const decodeJwt = (token) => {
     }
 }
 
-export const decodeRole = (decodedJwt) => {
+export const decodeRoles = (decodedJwt) => {
     if (decodedJwt) {
-        return decodedJwt.scope.split(" ");
+        return decodedJwt.authorities;
     }
     else {
         return null;
