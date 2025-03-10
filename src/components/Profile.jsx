@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { getProfile } from '../app/auth_service';
 import Loader from './Loader';
+import { getProfile } from '../app/auth_service';
 
 export default function Profile() {
 
@@ -44,7 +44,7 @@ export default function Profile() {
                         Roles:
                     </label>
                     <label className='px-2 text-primary'>
-                        {profile.principal.claims.scope}
+                        {profile.principal.claims.authorities.join(', ')}
                     </label>
                 </div>
             </div>
