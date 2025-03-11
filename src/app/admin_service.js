@@ -16,6 +16,10 @@ export const saveCutomer = (customer) => {
     return apiClient().post('/customers', customer);
 }
 
+export const saveCutomerWithUser = (customer) => {
+    return apiClient().post('/customers/user', customer);
+}
+
 export const updateCutomer = (id, customer) => {
     return apiClient().put(`/customers/${id}`, customer);
 }

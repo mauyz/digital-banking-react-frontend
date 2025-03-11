@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { saveCutomer } from '../../app/admin_service';
+import { saveCutomer, saveCutomerWithUser } from '../../app/admin_service';
 import { useNavigate } from 'react-router-dom';
 
 export default function NewCustomer() {
@@ -15,29 +15,30 @@ export default function NewCustomer() {
 
   const handleSaveCustomer = (e) => {
     e.preventDefault();
-    let customer;
+    let saveCustomerCallBack;
     if (username != '' && password != '') {
       if (retyPassword != password) {
         setError("Passwords don't match");
         return;
       }
-      customer = {
-        email: email,
-        name: name,
-        user: {
-          username: username,
+      saveCustomerCallBack = saveCutomerWithUser(
+        {
           email: email,
+          name: name,
+          username: username,
           password: password
         }
-      }
+      );
     }
     else {
-      customer = {
-        email: email,
-        name: name
-      }
+      saveCustomerCallBack = saveCutomer(
+        {
+          email: email,
+          name: name,
+        }
+      );
     }
-    saveCutomer(customer)
+    saveCustomerCallBack
       .then(() => {
         navigate("/");
       })
