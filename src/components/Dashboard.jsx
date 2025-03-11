@@ -1,17 +1,18 @@
 import React, { useEffect } from 'react'
 import { NavLink, Outlet, Route, Routes, useNavigate } from 'react-router-dom';
-import { decodeJwt, decodeRole, decodeUsername, logout } from '../app/app';
-import Home from './Home';
-import Register from './Register';
+import { decodeJwt, decodeRoles, decodeUsername, logout } from '../app/auth_service';
+import HomeUser from './HomeUser';
+import Profile from './Profile';
+import HomeAdmin from './admin/HomeAdmin';
+import NewCustomer from './admin/NewCustomer';
 
 export default function Dashboard() {
     const navigate = useNavigate();
     const accessToken = localStorage.getItem("accessToken");
     const payload = decodeJwt(accessToken);
-    const roles = decodeRole(payload);
-    const isAdmin = roles?.includes("ADMIN");
+    const roles = decodeRoles(payload);
+    const isAdmin = roles?.includes("ROLE_ADMIN");
     const username = decodeUsername(payload);
-    console.log(isAdmin);
 
     useEffect(
         () => {
@@ -44,27 +45,38 @@ export default function Dashboard() {
                                     Home
                                 </NavLink>
                             </li>
-                            <li className='nav-item'>
-                                <NavLink className='nav-link' to="/register" end>
-                                    Add customer
-                                </NavLink>
-                            </li>
-                            <li className='nav-item'>
-                                <NavLink className='nav-link' to="/history">
-                                    History
-                                </NavLink>
-                            </li>
-
+                            {
+                                isAdmin
+                                    ?
+                                    <>
+                                        <li className='nav-item'>
+                                            <NavLink className='nav-link' to="/register" end>
+                                                Add customer
+                                            </NavLink>
+                                        </li>
+                                    </>
+                                    : <>
+                                        <li className='nav-item'>
+                                            <NavLink className='nav-link' to="/history">
+                                                History
+                                            </NavLink>
+                                        </li>
+                                    </>
+                            }
                         </ul>
                         <ul className="navbar-nav ms-auto">
                             <li className='nav-item dropdown'>
-                                <button className="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <button className="nav-link dropdown-toggle text-capitalize" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     {username}
                                 </button>
                                 <ul className="dropdown-menu dropdown-menu-end">
-                                    <li><a className="dropdown-item" href="#">Profile</a></li>
+                                    <li>
+                                        <NavLink className="dropdown-item" to="/profile">Profile</NavLink>
+                                    </li>
                                     <li><hr className="dropdown-divider" /></li>
-                                    <li><a className="dropdown-item" onClick={handleLogout}>Logout</a></li>
+                                    <li>
+                                        <a className="dropdown-item" href="#" onClick={handleLogout}>Logout</a>
+                                    </li>
                                 </ul>
                             </li>
                         </ul>
@@ -73,8 +85,14 @@ export default function Dashboard() {
             </nav>
             <Routes>
                 <Route path='*' element={<Outlet />} >
-                    <Route index element={<Home />} />
-                    <Route path="register" element={<Register />} />
+                    {isAdmin
+                        ?
+                        <>
+                            <Route index element={<HomeAdmin />} />
+                            <Route path="register" element={<NewCustomer />} />
+                        </>
+                        : <Route index element={<HomeUser />} />}
+                    <Route path='profile' element={<Profile username={payload.sub} />} />
                 </Route>
             </Routes>
         </div>
