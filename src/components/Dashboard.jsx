@@ -5,6 +5,7 @@ import HomeUser from './HomeUser';
 import Profile from './Profile';
 import HomeAdmin from './admin/HomeAdmin';
 import NewCustomer from './admin/NewCustomer';
+import EditCustomer from './admin/EditCustomer';
 
 export default function Dashboard() {
     const navigate = useNavigate();
@@ -50,7 +51,7 @@ export default function Dashboard() {
                                     ?
                                     <>
                                         <li className='nav-item'>
-                                            <NavLink className='nav-link' to="/register" end>
+                                            <NavLink className='nav-link' to="/addCustomer" end>
                                                 Add customer
                                             </NavLink>
                                         </li>
@@ -89,7 +90,8 @@ export default function Dashboard() {
                         ?
                         <>
                             <Route index element={<HomeAdmin />} />
-                            <Route path="register" element={<NewCustomer />} />
+                            <Route path="addCustomer" element={<NewCustomer />} />
+                            <Route path="editCustomer/:id" element={<EditCustomer />} />
                         </>
                         : <Route index element={<HomeUser />} />}
                     <Route path='profile' element={<Profile username={payload.sub} />} />
