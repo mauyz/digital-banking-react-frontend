@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import Loader from './Loader';
-import { getProfile } from '../app/auth_service';
+import { getAssociatedCustomer, getProfile } from '../app/auth_service';
 
-export default function Profile() {
+export default function Profile({ username }) {
 
     const [profile, setProfile] = useState();
+    const [customer, setCustomer] = useState();
     const [loading, setLoading] = useState(true);
 
     useEffect(
@@ -14,13 +15,21 @@ export default function Profile() {
                     setTimeout(() => {
                         setProfile(response.data);
                         setLoading(false);
-                        
+
                     }, 1500);
                 })
                 .catch((error) => {
                     console.log(error);
                 });
-        }, []
+
+            getAssociatedCustomer(username)
+                .then((response) => {
+                    setCustomer(response.data);
+                })
+                .catch((error) => {
+                    console.log(error);
+                })
+        }, [username]
     )
 
     return (
@@ -29,7 +38,7 @@ export default function Profile() {
             <Loader />
             :
             <div className='card p-2 mt-2'>
-                <h3>Profile</h3>
+                <h5>User informations</h5>
                 <div className='mt-1'>
                     <label className='fw-bold'>
                         Username:
@@ -47,6 +56,21 @@ export default function Profile() {
                         {profile.principal.claims.authorities.join(', ')}
                     </label>
                 </div>
+
+                {
+                    customer &&
+                    <>
+                        <div className='mt-1'>
+                            <label className='fw-bold'>
+                                Email:
+                            </label>
+                            <label className='px-2 text-primary'>
+                                {customer.email}
+                            </label>
+                        </div>
+                    </>
+                }
+
             </div>
 
     )
